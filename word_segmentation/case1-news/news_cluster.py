@@ -29,3 +29,7 @@ with codecs.open('news_seg.txt', 'w', 'utf-8') as f:
     #     for word in word_list[word_list.index(i)]:
     #         f.write(word + ' ')
     #     f.write('\n')
+
+# ######################聚类分析###########################
+
+# 待续
