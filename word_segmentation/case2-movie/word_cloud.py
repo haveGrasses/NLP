@@ -60,10 +60,10 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt',
     # set word cloud
     background_pic = imread(pic_path)
     wc = WordCloud(font_path=font_path,
-                   background_color=color,  # 背景颜色
-                   max_words=2000,  # 词云显示的最大词数
-                   mask=background_pic,  # 设置背景图片
-                   max_font_size=100,  # 字体最大值
+                   background_color=color,  # background color
+                   max_words=2000,
+                   mask=background_pic,  # background pic
+                   max_font_size=100,
                    random_state=42,
                    # width=1000, height=860, margin=2,
                    )
@@ -71,11 +71,11 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt',
     image_colors = ImageColorGenerator(background_pic)  # extract colors from background picture
     plt.imshow(wc)
     plt.axis("off")
-    # plot with new color
+    # plot in new color
     plt.figure()
     plt.imshow(wc.recolor(color_func=image_colors))
     plt.axis("off")
-    # 绘制背景图片为颜色的图片
+    # in color of background pic
     plt.figure()
     plt.imshow(background_pic, cmap=plt.cm.gray)
     plt.axis("off")
