@@ -13,7 +13,10 @@ from wordcloud import WordCloud, ImageColorGenerator
 
 # read the content
 def load_text(file_path):
-    "return a string"
+    """
+    :param file_path: filename in in the current path
+    :return: string
+    """
     with codecs.open(file_path, 'r', 'utf-8') as f:
         content = f.read()
         text = content.replace('\r\n', '')
@@ -23,20 +26,25 @@ def load_text(file_path):
 
 # load stopwords
 def load_stopwords(stopwords_path):
-    "return a set"
-    stopwords = set(line.strip() for line in codecs.open('stopwords.txt', 'r', encoding='utf-8'))
+    """
+    :param stopwords_path: filename in in the current path
+    :return: set
+    """
+    stopwords = set(line.strip() for line in codecs.open(stopwords_path, 'r', encoding='utf-8'))
     print stopwords
     return stopwords
 
 
 # jieba segmentation
-def jieba_cut(text, stopwords, user_dict, add_dict=[]):
-    '''
-    text: string
-    stopwords: list
-    add_dict: list, add users' own dictionary
-    return: list
-    '''
+def jieba_cut(text, stopwords, user_dict, keep_name=True, add_dict=[]):
+    """
+    :param text: string
+    :param stopwords: list
+    :param user_dict: add user_dict
+    :param keep_name: bool, keep name in the text or not
+    :param add_dict: list, add users' own dictionary
+    :return: list
+    """
     word_list = []
     if not add_dict == []:
         for item in add_dict:
@@ -47,24 +55,45 @@ def jieba_cut(text, stopwords, user_dict, add_dict=[]):
     #     print '%s %s' % (word, flag)
     for word, flag in text_after_list:
         # remove stopwords and meaningless ones and only keep noun because nouns often carries more meaning
-        if (not word.strip() in stopwords) and len(word.strip()) > 1 and (flag == 'n' or flag == 'x' or flag == 'nr'):
-            word_list.append(word)
-            print word
+        if keep_name:
+            if (not word.strip() in stopwords) and len(word.strip()) > 1 and (
+                    flag == 'n' or flag == 'x' or flag == 'nr'):
+                word_list.append(word)
+                print word
+        else:
+            if (not word.strip() in stopwords) and len(word.strip()) > 1 and flag == 'n':
+                word_list.append(word)
+                print word
     return word_list
 
 
 # begin plotting
-def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt',
-                   font_path=u'微软雅黑.ttf', color='white'):
+def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt', keep_name=True,
+                   font_path=u'微软雅黑.ttf', color='grey', max_words=2000, save_name='word_cloud.png'):
+    """
+    :param pic_path: picture name
+    :param file_path: file name
+    :param stopwords_path: file name
+    :param keep_name: bool, whether keep name in jieba_cut()
+    :param font_path: font name
+    :param color: background color
+    :param max_words: max words to show
+    :param save_name: picture name
+    :return: none
+    """
+
     text = load_text(file_path)
     stopwords = load_stopwords(stopwords_path)
-    word_list = jieba_cut(text=text, stopwords=stopwords, user_dict='dict.txt')
+    if keep_name:  # ???: need to find a easier way
+        word_list = jieba_cut(text=text, stopwords=stopwords, keep_name=True, user_dict='dict.txt')
+    else:
+        word_list = jieba_cut(text=text, stopwords=stopwords, keep_name=False, user_dict='dict.txt')
     plot_content = ' '.join(word_list)
     # set word cloud
     background_pic = imread(pic_path)
     wc = WordCloud(font_path=font_path,
                    background_color=color,  # background color
-                   max_words=2000,
+                   max_words=max_words,
                    mask=background_pic,  # background pic
                    max_font_size=100,
                    random_state=42,
@@ -78,14 +107,18 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt',
     plt.figure()
     plt.imshow(wc.recolor(color_func=image_colors))
     plt.axis("off")
-    # in color of background pic
+    # show bg pic
     # plt.figure()
     # plt.imshow(background_pic, cmap=plt.cm.gray)
     # plt.axis("off")
-    plt.show()
     # save figure
-    wc.to_file('word_cloud.png')
+    if keep_name:
+        save_name = 'wc_name.png'
+    else:
+        save_name = 'wc_content.png'
+    wc.to_file(save_name)
+    plt.show()
 
 
 if __name__ == "__main__":
-    plot_wordcloud(pic_path='bg.jpg', file_path=u'湄公河行动.txt')
+    plot_wordcloud(pic_path='sun.jpg', file_path=u'湄公河行动.txt', max_words=200, keep_name=False)
