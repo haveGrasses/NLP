@@ -20,6 +20,7 @@ def load_text(file_path):
     with codecs.open(file_path, 'r', 'utf-8') as f:
         content = f.read()
         text = content.replace('\r\n', '')
+        text = text.replace('\n', '')
     print text
     return text
 
@@ -69,7 +70,7 @@ def jieba_cut(text, stopwords, user_dict, keep_name=True, add_dict=[]):
 
 # begin plotting
 def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt', keep_name=True,
-                   font_path=u'微软雅黑.ttf', color='grey', max_words=2000, save_name='word_cloud.png'):
+                   font_path=u'微软雅黑.ttf', color='grey', max_words=2000, save_name=''):
     """
     :param pic_path: picture name
     :param file_path: file name
@@ -112,13 +113,18 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt', keep_nam
     # plt.imshow(background_pic, cmap=plt.cm.gray)
     # plt.axis("off")
     # save figure
-    if keep_name:
-        save_name = 'wc_name.png'
+    if not save_name:
+        if keep_name:
+            save_name = 'wc_name.png'
+        else:
+            save_name = 'wc_content.png'
+        wc.to_file(save_name)
     else:
-        save_name = 'wc_content.png'
-    wc.to_file(save_name)
+        save_name = save_name
+        wc.to_file(save_name)
     plt.show()
 
 
 if __name__ == "__main__":
     plot_wordcloud(pic_path='sun.jpg', file_path=u'湄公河行动.txt', max_words=200, keep_name=False)
+
