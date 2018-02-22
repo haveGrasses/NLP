@@ -1,7 +1,7 @@
 # coding:utf-8
 '''
 interpreter:python2.7
-segment the words in play text and plot word cloud
+segment the words in a file and plot word cloud
 '''
 import codecs
 import jieba
@@ -13,7 +13,7 @@ from wordcloud import WordCloud, ImageColorGenerator
 
 # read the content
 def load_text(file_path):
-    "return string"
+    "return a string"
     with codecs.open(file_path, 'r', 'utf-8') as f:
         content = f.read()
         text = content.replace('\r\n', '')
@@ -24,7 +24,7 @@ def load_text(file_path):
 # load stopwords
 def load_stopwords(stopwords_path):
     "return a set"
-    stopwords = set(line.strip() for line in codecs.open('stopwords.txt', encoding='utf-8'))
+    stopwords = set(line.strip() for line in codecs.open('stopwords.txt', 'r', encoding='utf-8'))
     print stopwords
     return stopwords
 
@@ -43,10 +43,13 @@ def jieba_cut(text, stopwords, user_dict, add_dict=[]):
             jieba.add_word(item)
     jieba.load_userdict(user_dict)
     text_after_list = pseg.cut(text)
+    # for word, flag in text_after_list:  # ???:add these two lines wil cause error
+    #     print '%s %s' % (word, flag)
     for word, flag in text_after_list:
         # remove stopwords and meaningless ones and only keep noun because nouns often carries more meaning
-        if not word.strip() in stopwords and len(word.strip()) > 1 and flag == 'n':
+        if (not word.strip() in stopwords) and len(word.strip()) > 1 and (flag == 'n' or flag == 'x' or flag == 'nr'):
             word_list.append(word)
+            print word
     return word_list
 
 
@@ -76,9 +79,9 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt',
     plt.imshow(wc.recolor(color_func=image_colors))
     plt.axis("off")
     # in color of background pic
-    plt.figure()
-    plt.imshow(background_pic, cmap=plt.cm.gray)
-    plt.axis("off")
+    # plt.figure()
+    # plt.imshow(background_pic, cmap=plt.cm.gray)
+    # plt.axis("off")
     plt.show()
     # save figure
     wc.to_file('word_cloud.png')
