@@ -76,7 +76,7 @@ def plot_wordcloud(pic_path, file_path, stopwords_path='stopwords.txt', keep_nam
     :param file_path: file name
     :param stopwords_path: file name
     :param keep_name: bool, whether keep name in jieba_cut()
-    :param font_path: font name
+    :param font_path: font name 指定font可以解决词云显示中文问题
     :param color: background color
     :param max_words: max words to show
     :param save_name: picture name
